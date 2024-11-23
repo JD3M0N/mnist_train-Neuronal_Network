@@ -72,8 +72,8 @@ def forward_propagation(X, parameters):
 def compute_cost(AL, Y, parameters, lambd):
     m = Y.shape[0]
     cross_entropy_cost = -np.sum(Y * np.log(AL + 1e-8)) / m
-    L2_regularization_cost = (lambd / (2 * m)) * sum([np.sum(np.square(parameters[f'W{l}'])) for l in range(1, len(parameters) // 2 + 1)])
-    cost = cross_entropy_cost + L2_regularization_cost
+    L2_regularization = (lambd / (2 * m)) * sum([np.sum(np.square(parameters[f'W{l}'])) for l in range(1, len(parameters) // 2 + 1)])
+    cost = cross_entropy_cost + L2_regularization
     return cost
 
 # Backward propagation
@@ -89,16 +89,17 @@ def backward_propagation(Y, cache, parameters, lambd):
     gradients[f'db{L}'] = np.sum(dZL, axis=0, keepdims=True) / m
 
     # Backward propagation for layers L-1 to 1
+    dZ_prev = dZL
     for l in reversed(range(1, L)):
-        dA = np.dot(dZL, parameters[f'W{l+1}'].T)
+        dA = np.dot(dZ_prev, parameters[f'W{l+1}'].T)
         dZ = dA * relu_derivative(cache[f'Z{l}'])
         gradients[f'dW{l}'] = np.dot(cache[f'A{l-1}'].T, dZ) / m + (lambd / m) * parameters[f'W{l}']
         gradients[f'db{l}'] = np.sum(dZ, axis=0, keepdims=True) / m
-        dZL = dZ
+        dZ_prev = dZ
 
     return gradients
 
-# Update parameters using Adam
+# Update parameters using Adam optimizer
 def update_parameters(parameters, gradients, optimizer_params):
     L = len(parameters) // 2  # Number of layers
     beta1 = optimizer_params['beta1']
@@ -125,7 +126,7 @@ def update_parameters(parameters, gradients, optimizer_params):
 
     return parameters, optimizer_params
 
-# Initialize parameters for Adam
+# Initialize parameters for Adam optimizer
 def initialize_optimizer_params(parameters):
     optimizer_params = {
         'beta1': 0.9,
@@ -191,7 +192,7 @@ def predict(X, parameters):
     return predictions
 
 # Train the model
-layer_sizes = [784, 128, 64, 10]  # Added an additional hidden layer
+layer_sizes = [784, 256, 128, 64, 10]  # Added a third hidden layer
 epochs = 100
 lambd = 0.001  # L2 regularization factor
 batch_size = 64  # Mini-batch size
