@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # MNIST Neural Network
 
 This project implements a simple neural network to classify handwritten digits from the MNIST dataset.
@@ -19,3 +20,6 @@ This project implements a simple neural network to classify handwritten digits f
 Install the required packages using:
 ```sh
 pip install numpy
+=======
+# mnist_train-Neuronal_Network
+>>>>>>> 45419bc23024df337c60d06b69cc7311e72d0923
